@@ -1,24 +1,22 @@
 import logging
-import os
+from io import BytesIO
 
 import boto3
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from xhtml2pdf import pisa
 
-load_dotenv()
-
-AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
-AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
-REGION = os.getenv("REGION")
-BUCKET = os.getenv("BUCKET")
-AUTHOR = os.getenv("AUTHOR")
-CREATOR = os.getenv("CREATOR")
+AWS_ACCESS_KEY = "AKIARXYCRBD3RRJL2YFF"
+AWS_SECRET_KEY = "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"
+REGION = "sa-east-1"
+BUCKET = "beyourstories"
+AUTHOR = "Celio Vieira"
+CREATOR = "Celio Vieira"
 
 app = FastAPI(
-    title="Convert to .PDF",
+    title="Create .PDF doc",
     version="1.0",
     description="Create .pdf docs",
 )
@@ -55,13 +53,7 @@ async def create_pdf() -> str:
 
     pdf_data = pdf.getpdfdata()
 
-    aws_session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY,
-        aws_secret_access_key=AWS_SECRET_KEY,
-        region_name=REGION,
-    )
-    s3_client = aws_session.client("s3")
-    s3_client.put_object(Bucket=BUCKET, Key="test.pdf", Body=pdf_data)
+    save_doc(pdf_data)
 
     message = "Doc created"
     logging.info(message)
@@ -69,5 +61,38 @@ async def create_pdf() -> str:
     return message
 
 
+@app.get("/convert_html_to_pdf")
+async def convert_to_pdf() -> str:
+    """Convert html string to pdf"""
+
+    source_html = "<p style='color: #ff33aa'><strong>A big man create a new world</strong></p>\n<p>But, at a moment, he <ins>dies</ins></p>"
+
+    file = BytesIO()
+
+    if file:
+        pisa.pisaDocument(BytesIO(source_html.encode("UTF-8")), file)
+
+        save_doc(file.getvalue())
+
+        file.seek(0)
+
+        message = "Doc converted"
+        logging.info(message)
+
+        return message
+
+    return "Error"
+
+
 def mm_to_points(mm: float) -> float:
     return mm / 0.352777
+
+
+def save_doc(doc):
+    aws_session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY,
+        aws_secret_access_key=AWS_SECRET_KEY,
+        region_name=REGION,
+    )
+    s3_client = aws_session.client("s3")
+    s3_client.put_object(Bucket=BUCKET, Key="test.pdf", Body=doc)
