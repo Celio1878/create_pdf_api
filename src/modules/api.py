@@ -25,6 +25,10 @@ async def convert_json_to_pdf(dto: JsonToPdfDto) -> JSONResponse:
 
     [err, success] = create_pdf_from_json(data=dto)
 
+    if err:
+        response = JSONResponse(content=err, status_code=400)
+        return response
+
     response = JSONResponse(content=success, status_code=200)
     return response
 
@@ -40,6 +44,10 @@ async def convert_html_to_pdf(dto: HtmlDto) -> JSONResponse:
         doc_name=dto.doc_name,
         bucket_directory=dto.bucket_directory,
     )
+
+    if err:
+        response = JSONResponse(content=err, status_code=400)
+        return response
 
     response = JSONResponse(content=succes, status_code=200)
     return response
