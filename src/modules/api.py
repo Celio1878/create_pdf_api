@@ -1,60 +1,45 @@
-from io import BytesIO
-
+from dtos.HtmlDto import HtmlDto
+from dtos.JsonToPdfDto import JsonToPdfDto
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
-from repo.save_doc import save_doc
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from utils.mm_to_points import mm_to_points
-from xhtml2pdf import pisa
-
-AUTHOR = "Celio Vieira"
-CREATOR = "Celio Vieira"
+from fastapi.responses import JSONResponse, RedirectResponse
+from src.services.create_pdf_from_html import create_pdf_from_html
+from src.services.create_pdf_from_json import create_pdf_from_json
 
 app = FastAPI(
-    title="Create .PDF doc",
+    title="Convert to .PDF",
     version="1.0",
-    description="Create .pdf docs",
+    description="Convertf .json or html string to .pdf and save doc in S3 key",
+    docs_url="/docs",
 )
 
 
-@app.get("/", include_in_schema=False)
+@app.get("/", include_in_schema=False, status_code=301)
 def docs_redirect() -> RedirectResponse:
     return RedirectResponse("/docs")
 
 
-@app.get("/create_pdf_from_json")
-async def create_pdf_from_json() -> str:
-    """Create a PDF file"""
+@app.post("/create_pdf_from_json")
+async def convert_json_to_pdf(dto: JsonToPdfDto) -> JSONResponse:
+    """Create a PDF file from JSON data structure"""
+    print(dto, "JSON DTO")
 
-    left_space = mm_to_points(20)
-    text_pdf_height = mm_to_points(280)
+    [err, success] = create_pdf_from_json(data=dto)
 
-    pdf = canvas.Canvas("./test.pdf", pagesize=A4)
-    pdf.drawString(left_space, text_pdf_height, "PDF created")
-    pdf.setAuthor(AUTHOR)
-    pdf.setCreator(CREATOR)
-    pdf.setFont("Helvetica", size=18)
-
-    pdf.showPage()
-    pdf_data = pdf.getpdfdata()
-    save_doc(pdf_data)
-
-    message = "Doc created"
-    return message
+    response = JSONResponse(content=success, status_code=200)
+    return response
 
 
-@app.get("/create_pdf_from_html")
-async def create_pdf_from_html(source_html: str) -> str:
-    """Convert html string to pdf"""
+@app.post("/create_pdf_from_html")
+async def convert_html_to_pdf(dto: HtmlDto) -> JSONResponse:
+    """Convert html string to pdf file"""
+    print(dto, "HTML DTO")
 
-    file = BytesIO()
-    pisa.pisaDocument(BytesIO(source_html.encode("UTF-8")), file)
+    [err, succes] = create_pdf_from_html(
+        html_string=dto.html_string,
+        aws_config=dto.aws_config,
+        doc_name=dto.doc_name,
+        bucket_directory=dto.bucket_directory,
+    )
 
-    pdf = file.getvalue()
-    save_doc(pdf)
-
-    file.seek(0)
-
-    message = "Doc converted"
-    return message
+    response = JSONResponse(content=succes, status_code=200)
+    return response
