@@ -1,0 +1,17 @@
+.pdf docs
+☐ Create .pdf from JSON @high
+✔ Create .pdf from HTML @high @done(23-09-09 02:17)
+☐ Create tests @critical
+☐ Refactor
+☐ Create README
+
+# HTML
+☐ Receive HTML string from DTO @high
+☐ Validate data @critical
+
+# JSON
+☐ Receive JSON from DTO @high
+☐ Validate JSON fields @critical
+
+# CONFIG
+☐ Add Params to use in infra @critical

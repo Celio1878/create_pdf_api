@@ -27,15 +27,8 @@ def docs_redirect() -> RedirectResponse:
     return RedirectResponse("/docs")
 
 
-@app.get("/test")
-def test() -> str:
-    message = "Endpoint Testing"
-
-    return message
-
-
-@app.get("/create_pdf")
-async def create_pdf() -> str:
+@app.get("/create_pdf_from_json")
+async def create_pdf_from_json() -> str:
     """Create a PDF file"""
 
     left_space = mm_to_points(20)
@@ -61,8 +54,8 @@ async def create_pdf() -> str:
     return message
 
 
-@app.get("/convert_html_to_pdf")
-async def convert_to_pdf() -> str:
+@app.get("/create_pdf_from_html")
+async def create_pdf_from_html() -> str:
     """Convert html string to pdf"""
 
     source_html = "<p style='color: #ff33aa'><strong>A big man create a new world</strong></p>\n<p>But, at a moment, he <ins>dies</ins></p>"
