@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from src.repo.save_doc import AWSConfig, save_pdf
+from src.repo.save_pdf import AWSConfig, save_pdf
 from xhtml2pdf import pisa
 
 

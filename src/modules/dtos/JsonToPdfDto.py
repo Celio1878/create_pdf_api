@@ -1,9 +1,10 @@
 from typing import List
 
-from src.repo.save_doc import AWSConfig
+from pydantic import BaseModel
+from src.repo.save_pdf import AWSConfig
 
 
-class JsonToPdfDto:
+class JsonToPdfDto(BaseModel):
     json_data: List
     aws_config: AWSConfig
     doc_name: str

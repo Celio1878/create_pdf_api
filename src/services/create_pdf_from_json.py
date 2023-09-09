@@ -2,7 +2,7 @@ from typing import Any, List
 
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from src.repo.save_doc import AWSConfig, save_pdf
+from src.repo.save_pdf import AWSConfig, save_pdf
 from src.utils.mm_to_points import mm_to_points
 
 

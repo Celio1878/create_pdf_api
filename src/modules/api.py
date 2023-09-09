@@ -1,7 +1,7 @@
-from dtos.HtmlDto import HtmlDto
-from dtos.JsonToPdfDto import JsonToPdfDto
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, RedirectResponse
+from src.modules.dtos.HtmlDto import HtmlDto
+from src.modules.dtos.JsonToPdfDto import JsonToPdfDto
 from src.services.create_pdf_from_html import create_pdf_from_html
 from src.services.create_pdf_from_json import create_pdf_from_json
 
