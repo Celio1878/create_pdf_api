@@ -1,4 +1,4 @@
-import os.path
+import os
 from typing import Any, List
 
 from reportlab.lib.pagesizes import A4
@@ -16,9 +16,10 @@ class CreatePdfFromJson:
 
 pdf_max_height = cm * 29.7 - cm * 3.7
 pdf_min_height = cm * 3.7
-pdf_paragraph_width = cm * 21 - cm * 2.5
+pdf_max_width = cm * 21 - cm * 2.5
+pdf_paragraph_width = cm * 2.5
 
-file_name = os.path.join(os.getcwd(), "src", "assets", "bys.jpeg")
+image_file_name = os.path.join(os.getcwd(), "src", "assets", "bys.jpeg")
 
 
 def create_pdf_from_json(
@@ -33,10 +34,28 @@ def create_pdf_from_json(
     """
 
     pdf = canvas.Canvas("./test.pdf", pagesize=A4)
-    pdf.drawImage(file_name, 0, pdf_max_height, width=cm * 3, height=cm * 3)
-    pdf.drawString(pdf_paragraph_width, pdf_max_height, "PDF created")
+    page_number = pdf.getPageNumber()
+    pdf.setFont("Helvetica", size=10)
+    pdf.drawString(
+        pdf_max_width - cm * 1, pdf_max_height + cm * 1.2, "Page: " + str(page_number)
+    )
+    pdf.drawImage(image_file_name, 0, pdf_max_height, width=cm * 3, height=cm * 3)
+    pdf.setFont("Helvetica-Bold", size=18, leading=15)
+    pdf.drawString(pdf_paragraph_width, pdf_max_height - cm * 2, "PDF created")
+    pdf.line(
+        pdf_max_width,
+        pdf_max_height - cm * 5,
+        pdf_paragraph_width,
+        pdf_max_height - cm * 5,
+    )
+    pdf.setFont("Helvetica", size=14, leading=5)
+    pdf.drawCentredString(cm * 21 / 2, pdf_min_height * 5.3, "Centralizado")
+    pdf.drawString(
+        pdf_paragraph_width,
+        pdf_min_height * 5,
+        "-" * 98,
+    )
     pdf.setAuthor("Celio Vieira")
-    pdf.setFont("Helvetica", size=18)
 
     pdf.showPage()
     pdf.save()
