@@ -21,7 +21,7 @@ def docs_redirect() -> RedirectResponse:
 @app.post("/create_pdf_from_json")
 async def convert_json_to_pdf(dto: JsonToPdfDto) -> JSONResponse:
     """Create a PDF file from JSON data structure"""
-    print(dto, "JSON DTO")
+    print(dto, "JSON DTO", type(dto), sep="\n")
 
     [err, success] = create_pdf_from_json(data=dto)
 

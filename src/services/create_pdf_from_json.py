@@ -1,9 +1,10 @@
+import os.path
 from typing import Any, List
 
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
 from src.repo.save_pdf import AWSConfig, save_pdf
-from src.utils.mm_to_points import mm_to_points
 
 
 class CreatePdfFromJson:
@@ -13,21 +14,32 @@ class CreatePdfFromJson:
     bucket_directory: str
 
 
-pdf_max_height = mm_to_points(280)
-pdf_min_height = mm_to_points(5)
+pdf_max_height = cm * 29.7 - cm * 3.7
+pdf_min_height = cm * 3.7
+pdf_paragraph_width = cm * 21 - cm * 2.5
+
+file_name = os.path.join(os.getcwd(), "src", "assets", "bys.jpeg")
 
 
 def create_pdf_from_json(
     data: CreatePdfFromJson | Any,
 ) -> tuple[str | None, str | None]:
-    left_space = mm_to_points(20)
+    """
+    A4 size - 21cm x 29.7cm
+    Border Top 3.7cm
+    Border Bottom 3.7cm
+    Border Left 2.5cm
+    Border Right 2.5cm
+    """
 
     pdf = canvas.Canvas("./test.pdf", pagesize=A4)
-    pdf.drawString(left_space, pdf_max_height, "PDF created")
+    pdf.drawImage(file_name, 0, pdf_max_height, width=cm * 3, height=cm * 3)
+    pdf.drawString(pdf_paragraph_width, pdf_max_height, "PDF created")
     pdf.setAuthor("Celio Vieira")
     pdf.setFont("Helvetica", size=18)
 
     pdf.showPage()
+    pdf.save()
     pdf_data = pdf.getpdfdata()
     save_pdf(
         pdf_data,
