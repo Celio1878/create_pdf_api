@@ -4,6 +4,7 @@ from src.modules.dtos.HtmlDto import HtmlDto
 from src.modules.dtos.JsonToPdfDto import JsonToPdfDto
 from src.services.create_pdf_from_html import create_pdf_from_html
 from src.services.create_pdf_from_json import create_pdf_from_json
+from src.services.pdf_templates import pdf_templates
 
 app = FastAPI(
     title="Convert to .PDF",
@@ -50,4 +51,22 @@ async def convert_html_to_pdf(dto: HtmlDto) -> JSONResponse:
         return response
 
     response = JSONResponse(content=succes, status_code=200)
+    return response
+
+
+@app.post("/create_pdf_from_template")
+async def create_pdf_from_template() -> JSONResponse:
+    """Create .pdf file from templates"""
+    print("Template Data")
+
+    pdf_templates()
+
+    err = False
+    success = None
+
+    if err:
+        response = JSONResponse(content=err, status_code=400)
+        return response
+
+    response = JSONResponse(content=success, status_code=200)
     return response
